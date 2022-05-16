@@ -1,0 +1,47 @@
+<ngx-componentsheader pageName='Leave Plan' [requiredButton]="topActionButtons" (buttonClick)='modal($event)'>
+</ngx-componentsheader>
+<nb-card>
+    <nb-card-body>
+
+        <nb-tabset #tset (click)="filterLeavePlan(tset.tabs._results)">
+            <nb-tab tabTitle="Approved"  ></nb-tab>
+            <nb-tab tabTitle="Pending" ></nb-tab>
+            <nb-tab tabTitle="Rejected" ></nb-tab>
+        </nb-tabset>
+        <ngx-default-content
+        *ngIf="showEmpty"
+        pageHeader="Leave Plan"
+        pageDescription="Click on the button to create a Leave Plan"
+        buttonValue="Create Leave Plan"
+        [loading]="loading"
+        (buttonClick)="showLeavePlanModal = true;"
+
+      >
+      </ngx-default-content>
+        <ngx-tablecomponent
+        *ngIf="!showEmpty"
+        (filterChange)="filterUpdated($event)"
+        [showActions]="false"
+        [showFilter]="true"
+        [userData]="LeaveData"
+        [tableColum]="tableColumns"
+        [totalItems]="totalItems"
+        [currentPage]="currentPage"
+        [loading]="loading"
+        >
+    </ngx-tablecomponent>
+    </nb-card-body>
+</nb-card>
+
+
+
+
+
+<ngx-createleave-request *ngIf="showAddPlanModal" (closed)="leaveRequestmodalClosed($event)" [showModalRequest]="showAddPlanModal">
+
+
+</ngx-createleave-request>
+
+<ngx-createleave-plan *ngIf="showLeavePlanModal"  (closed)="leavePlanmodalClosed($event)"  [showModal]="showLeavePlanModal">
+
+</ngx-createleave-plan>

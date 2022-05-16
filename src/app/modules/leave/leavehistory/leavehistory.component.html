@@ -1,0 +1,41 @@
+<ngx-componentsheader pageName='Leave History' [requiredButton]="topActionButtons" (buttonClick)='modal($event)'>
+
+</ngx-componentsheader>
+
+<nb-card>
+  <nb-card-body>
+    <ngx-default-content
+    *ngIf="showEmpty"
+    pageHeader="No Leave History Record"
+    pageDescription=""
+    buttonValue=""
+    [loading]="loading"
+
+  >
+  </ngx-default-content>
+    <ngx-tablecomponent  
+    *ngIf="!showEmpty"
+    (filterChange)="filterUpdated($event)"
+    [showActions]="false"
+    [showFilter]="true"
+    [userData]="allleaveHistory" 
+    [tableColum]="tableColumns"
+    [totalItems]="totalItems"
+    [currentPage]="currentPage"
+    [loading]="loading"
+    >
+</ngx-tablecomponent>
+
+
+<ngx-createleave-request *ngIf="showAddPlanModal" (closed)="leaveRequestmodalClosed($event)" [showModalRequest]="showAddPlanModal">
+
+
+</ngx-createleave-request>
+
+<ngx-createleave-plan *ngIf="showLeavePlanModal" (closed)="leavePlanmodalClosed($event)"  [showModal]="showLeavePlanModal">
+
+</ngx-createleave-plan>
+
+  </nb-card-body>
+
+</nb-card>

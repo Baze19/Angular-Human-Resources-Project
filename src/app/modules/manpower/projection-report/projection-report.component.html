@@ -1,0 +1,335 @@
+<ngx-componentsheader [pageName]='pageName' [requiredButton]="topActionButtons" (buttonClick)='modal($event)'>
+
+</ngx-componentsheader>
+<nb-card>
+    <nb-card-body>
+        <ngx-default-content
+        *ngIf="showEmpty"
+        pageHeader="Projection Report"
+        pageDescription="Filter to get projection report"
+  
+        [loading]="loading"
+
+      >
+      </ngx-default-content>
+     
+
+
+    <div class="table-responsive"   *ngIf="!showEmpty">
+      <table class="table table-hover">
+        <thead>
+          <tr>
+            <th *ngIf="showCheckBox"></th>
+            <th scope="col" *ngFor="let col of tableColumns">{{ col.title }}</th>
+            <th *ngIf="showActions"></th>
+          </tr>
+        </thead>
+        <tbody>
+          <ng-container *ngIf="!loading">
+            <tr *ngFor="let data of DepartmentManPowerActivities; let i = index">
+              <td *ngIf="showCheckBox">
+                <div style="padding: 10px">
+                  <nb-checkbox (change)='tableActionChecked(i, data)' [checked]="data['lchecked']"></nb-checkbox>
+                </div>
+              </td>
+              <td *ngFor="let col of tableColumns">
+                <span *ngIf="col.type === COLUMN_TYPES.Object">  
+            
+                  <span class="mb-0" *ngIf="data.jobRoleName">
+                    <span class="badge badge-purple" style="padding: 5px;">
+                      {{data.jobRoleName}} | {{data.jobRoleCount}}
+                    </span>  
+                  </span> 
+                  <span *ngFor="let rl of data.allroles; let i= index">
+                  <span class="mb-0" >
+                    <span class="badge badge-purple" style="padding: 5px; margin: 2px">
+                      {{rl.roleName}} | {{rl.roleResource}}
+                    </span>  
+                  </span> 
+                </span>             
+                
+                </span>
+                <span *ngIf="col.type === COLUMN_TYPES.Text || col.type === NULL">{{ data[col.name] }}</span>
+                <span *ngIf="col.type === COLUMN_TYPES.Number">{{ data[col.name] | number: '.2'}}</span>
+                <ngx-status *ngIf="col.type === COLUMN_TYPES.Status" [data]="data"></ngx-status>
+                <span *ngIf="col.type === COLUMN_TYPES.Date"> {{ data[col.name] | date }} </span>
+                <span *ngIf="col.type === COLUMN_TYPES.Mark">
+                  <span>
+                    <nb-icon *ngIf="data[col.name]" icon="checkmark-circle-2-outline" class="text-primary"></nb-icon>
+                    <nb-icon *ngIf="!data[col.name]" icon="close-circle-outline" class="text-danger"></nb-icon>
+                </span>
+                </span>
+                <span *ngIf="col.type === COLUMN_TYPES.Link">
+                  <button nbButton status='primary' outline
+                    style="background-color: transparent; border: none; text-decoration: underline; padding: 0%; min-width: unset !important;"
+                    (click)='customActionClicked(col, data)'>{{ col.link_name }}</button>
+                </span>
+             
+              </td>
+              <td *ngIf="showActions">
+                <ng-template #card>
+                  <nb-card class="popover-card">             
+                    <nb-card-body>                
+                      <nb-list>
+                        <nb-list-item *ngIf="data.requirementcompletedStatus == 'Pending'" (click)='tableActionClicked("action", data)' style="cursor: pointer;">
+                         Take Action
+                        </nb-list-item>
+                        <nb-list-item *ngIf="data.requirementcompletedStatus == 'Completed'"  (click)='tableActionClicked("view", data)' style="cursor: pointer;">
+                         View
+                        </nb-list-item>
+                      </nb-list>
+                    </nb-card-body>
+                  </nb-card>
+            
+                </ng-template>
+                <button nbButton outline status="primary" [nbPopover]="card" style="
+                    min-width: unset !important;
+                    background: transparent;
+                    border: none;
+                    padding: 0px;
+                  ">
+                  <nb-icon icon="more-horizontal-outline"></nb-icon>
+                </button>
+              </td>
+            </tr>
+          </ng-container>
+    
+          <tr *ngIf="DepartmentManPowerActivities.length == 0 && !loading">
+            <td colspan="10000">no record found</td>
+          </tr>
+          <tr *ngIf="loading">
+            <td colspan="1000">
+              <nb-card [nbSpinner]="true" nbSpinnerSize="medium" nbSpinnerStatus="primary">
+                <nb-card-body> Loading... </nb-card-body>
+              </nb-card>
+            </td>
+          </tr>
+          </tbody>
+          </table>
+          </div>
+          <div style="display: flex;padding-top: 10px;" *ngIf="!showEmpty">
+            <div style="flex: auto;">
+            <div style="padding-top: 7px;">
+              Showing {{currentPage}} - {{pageSize}} of {{totalItems}}
+            </div>
+            </div>
+            <div>
+              <div class="paginator">
+                <nb-actions size="medium">
+                  <nb-action [disabled]="currentPage <= 1" (click)="pageClicked(currentPage - 1)" icon="arrow-ios-back-outline"></nb-action>
+                <nb-action>{{currentPage}}</nb-action>
+          
+                  <nb-action icon="arrow-ios-forward-outline" [disabled]="currentPage <= totalItems" (click)="pageClicked(currentPage + 1)"></nb-action>
+                </nb-actions>
+          
+          
+              </div>
+            </div>
+          
+          </div>
+    </nb-card-body>
+</nb-card>
+<ngx-side-modal [(show)]='showFilterModal' style="width: 500px; height: 1000px;">
+    <div modal-header>Projection Report Filter</div>
+    <div modal-body>
+ <form id="filterReportForm" name="filterReportForm" #filterReportForm="ngForm" >
+ <div class="row">
+    <div class="col-sm-12 form-group">
+        <label>Job category</label>
+        <select Placeholder="Job category" id="jobCategory" name="jobCategory" [(ngModel)]="newQuery.jobCategory" #jobCategory="ngModel" (change)="updateJobCategoty($event)" class="form-control" required >
+            <option value="">--Job category--</option>
+            <option value="Job Role">Job Role</option>
+            <option value="Position">Position</option>
+            <option value="Grade">Grade</option>    
+               
+          </select>  
+    </div>
+    <div class="col-sm-12 form-group">
+        <span class="help-block">Activity Calendar year</span>     
+        <select (change)="nulltasktype()" id="activityYear" name="activityYear" [(ngModel)]="newQuery.activityYear" #activityYear="ngModel" required class="form-control" >
+          <option value="">--Activity Year--</option>
+          <option *ngFor="let yr of CustomService.nextTenYears;" value="{{yr}}">{{yr}}</option>     
+        </select>
+        
+        <div *ngIf="activityYear.invalid && (activityYear.dirty || activityYear.touched) " class="error">
+          <div *ngIf="(activityYear.errors.required || activityYear.errors)">
+            activity calendar year is required
+          </div>
+        </div>        
+      </div>
+      <div class="col-sm-6 form-group">
+        <span class="help-block">Department</span> 
+        <select id="departments" name="departments" [(ngModel)]="newQuery.departments" #departments="ngModel" class="form-control" >
+          <option value="">--Departmants--</option>
+          <option *ngFor="let dep of alldepartments" [value]="dep.option_value">{{dep.option_text}}</option>
+         
+        </select> 
+                
+      </div>
+      <div class="col-sm-6 form-group">
+        <span class="help-block">Status</span> 
+        <select id="status" name="status" [(ngModel)]="newQuery.status" #status="ngModel" class="form-control" >
+          <option value="">--Status--</option>
+          <option value="2">Approved</option>
+          <option value="3">Rejected</option>
+          <option value="1">Pending</option>      
+        </select>   
+                
+      </div>
+      <div class="col-sm-12 form-group">
+        <span class="help-block">Base year</span>    
+          <select id="baseYear" name="baseYear" [(ngModel)]="baseYear" (change)="compareyearlycost($event)" class="form-control" required>
+            <option value="">--Base Year--</option>
+         <option *ngFor="let yr of CustomService.prevTenYears;" value="{{yr}}">{{yr}}</option> 
+                </select>                
+      </div>
+      <div class="col-sm-6 form-group">
+        <span class="help-block">Task Type</span> 
+        <select [disabled]="!newQuery.activityYear" Placeholder="Task Type" id="taskType" name="taskType" [(ngModel)]="newQuery.taskType" #taskType="ngModel" (change)="getTaskCategorytype($event)"  class="form-control" >
+            <option value="">--Task Type--</option>
+            <option value="1">Task</option>
+            <option value="2">Project</option>            
+               
+          </select>  
+                
+      </div>
+      <div class="col-sm-6 form-group">
+        <span class="help-block">
+            <span *ngIf="newQuery.taskType == 1">Project</span>
+            <span *ngIf="newQuery.taskType == 2">Task</span>&nbsp;Activity Name
+        </span> 
+        <select [disabled]="!newQuery.taskType" id="taskProject" name="taskProject" [(ngModel)]="newQuery.taskProject" #taskProject="ngModel"  class="form-control" >
+            <option value="">--Task/Project--</option>
+            <option *ngFor="let type of alltasktype;" value="{{type.ActivtyName}}">{{type.ActivtyName}}</option>     
+          </select>
+                
+      </div>
+ </div>
+ </form>
+    </div>
+    <div modal-actions class="d-flex"
+      style="display: flex; flex-direction: row; justify-content: center; margin-top: 10px; margin-bottom: 20px;">
+      <ngx-loadable-button [loading]="loading" (click)="getRequirement(newQuery)">
+        Submit 
+      </ngx-loadable-button>  
+      <div style="padding-left: 15px;">
+        <button nbButton outline status="primary" class="d-flex column" style="background-color: white;">Discard</button>
+      </div>
+     
+    </div>
+    <div style="margin-top: 10px;"></div>
+  </ngx-side-modal>
+
+  <ngx-side-modal [(show)]='showHRReviewModal' position="Center" style="width: 500px; height: 1000px;">
+    <div modal-header>HR Action</div>
+    <div modal-body>
+        <div class="modal-body">  
+            <div *ngIf="newQuery.departments && newQuery.departments != 'All'">
+                <div class="row">
+                    <div class="col-sm-12 form-group">
+                        <label>Department</label>
+                        {{DepartmentActivities.deptmntName}}
+                    </div>
+                    <div class="col-sm-12 form-group">
+                        <label>Head of Department</label>
+                        {{DepartmentActivities.headofDepartmentName}}
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-12 form-group">
+                    <label>Resource Count</label>
+                    {{DepartmentActivities.jobRoleCount}}
+                    </div>
+            </div>
+       
+            <div class="form-group row">
+              <label class="col-md-12 control-label" for="example-email">Resource</label>
+            </div>
+            <div class="form-group row">
+              <div class="col-md-12" >  
+                <div class="table-responsive">
+                <table class="table table-striped">
+                  <thead>
+                  <tr style="background-color: #d7d0e6;">
+                    <th scope="col" style="font-size: 12px; font-weight: normal">Activity Name</th>
+                    <th scope="col" style="font-size: 12px; font-weight: normal">Role Name</th>
+                    <th scope="col" style="font-size: 12px; font-weight: normal">Requested Resource</th>
+                    <th scope="col" style="font-size: 12px; font-weight: normal">
+                      Cost Per Resource
+                    </th>
+                    <th scope="col" style="font-size: 12px; font-weight: normal">
+                      Total Resource Cost
+                    </th>
+                    <th scope="col" style="font-size: 12px; font-weight: normal">
+                      Approved Resource
+                    </th>
+                    <th scope="col" style="font-size: 12px; font-weight: normal">Decision</th>
+                    <th scope="col" style="font-size: 12px; font-weight: normal">Comment</th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                  <tr *ngIf="DepartmentActivities.newRequirement.length < 1">
+                    <td colspan="8">No Record Found</td>
+                  </tr>
+                  <tr *ngFor="let req of DepartmentActivities.newRequirement;let i = index">                
+                    <td>{{req.activityName}}</td>
+                    <td>
+               
+                      <span *ngIf="req.jobRoleId">{{req.jobRoleName}}</span>
+                      <span *ngIf="req.postionId">{{req.positionName}}</span>
+                      </td>
+                    <td><span>{{req.numberOfResource}}</span></td> 
+                    <td><span>{{req.costPerResource | number: '.2'}}</span></td>
+                    <td><span>{{req.numberOfResource * req.costPerResource | number: '.2'}}</span></td>               
+                    <td>   
+                      <span *ngIf="req.status == 2 || req.status == 3 || req.status == 0">{{req.approvedResource}}</span>
+                                 
+                      <input *ngIf="req.status == 1" required  type="text"  class="form-control" (keyup)="setApprovedResource($event,req)">
+                       </td>
+                    <td > 
+                      <span class="mb-0" *ngIf="req.status == 2 || req.status == 3 || req.status == 0">                
+                        <span class="badge" style="background-color: #EF5350;width: 80px;" *ngIf="req.status == 3">
+                          {{req.decision}}d
+                        </span>
+                        <span class="badge" style="background-color: #1e8300;width: 80px;" *ngIf="req.status == 2">
+                          {{req.decision}}d
+                        </span>
+                        <span class="badge" style="background-color: #d99700;width: 80px;" *ngIf="req.status == 0">
+                          {{req.decision}}d
+                        </span>
+                      </span>       
+                      <select *ngIf="req.status == 1 " class="form-control" (change)="setdecision($event,req)">
+                        <option value="">--select--</option>
+                        <option value="Return">Return</option>
+                        <option value="Approve">Approve</option>
+                        <option value="Decline">Decline</option>        
+                      </select>
+                     </td>
+                    <td>     
+                      <span *ngIf="req.status == 2 || req.status == 3 || req.status == 0">{{req.hrComment}}</span>
+                               
+                      <input *ngIf="req.status == 1"  type="text"  class="form-control" (keyup)="setcomment($event,req)"  >
+                     </td>
+                  </tr>
+                  </tbody>
+                </table>   
+              </div>
+            </div>
+            </div>
+       
+      
+          </div>
+   </div>
+   <div modal-actions class="d-flex"
+   style="display: flex; flex-direction: row; justify-content: flex-end;align-items: flex-end; margin-top: 10px; margin-bottom: 20px;">
+   <ngx-loadable-button [loading]="loading" (click)="submitrequirement(DepartmentActivities)">
+     Submit 
+   </ngx-loadable-button>  
+   <div style="padding-left: 15px;">
+     <button (click)="showHRReviewModal = false" nbButton outline status="primary" class="d-flex column" style="background-color: white;">Discard</button>
+   </div>
+  
+ </div>
+ <div style="margin-top: 5px;"></div>
+    </ngx-side-modal>

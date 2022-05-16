@@ -1,0 +1,146 @@
+<ngx-componentsheader pageName="Overall Budget" [requiredButton]="[]">
+  <div headerButton>
+    <select (ngModelChange)="handleyear($event)" placeholder="Select finacial year" class="form-control"
+      name="year" id="benefitTypeId" #benefitTypeId="ngModel" [(ngModel)]="year">
+      <option value="">--Select Finacial year---</option>
+      <option *ngFor="let year of  FinacialYear" [value]="year.id">{{year.text}}</option>
+    </select>
+
+    <div *ngIf="benefitTypeId.invalid && (benefitTypeId.dirty || benefitTypeId.touched)" class="error">
+      <div *ngIf="benefitTypeId.errors.required">finacial year is required</div>
+    </div>
+  </div>
+</ngx-componentsheader>
+
+<div style="margin: 0.5rem;"></div>
+<div style="background-color: white; min-height: 10vh">
+  <div class="row" style="padding-top: 1rem; padding-bottom: 1rem">
+    <div class="col-sm-6">
+      <div style="
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            justify-content: space-around;
+            border-right: 1px solid #00000020;
+          ">
+        <div style="
+              border: 20px solid #4847e0;
+              border-left-color: #f6f7f9;
+              border-radius: 50%;
+              width: 180px;
+              height: 180px;
+              display: flex;
+              justify-content: center;
+              text-align: center;
+              flex-direction: column;
+              align-items: center;
+            ">
+          <span style="font-size: 18px; font-weight: 500;">{{benefitDetails.spent}}</span>
+          <span style="font-size: 18px; font-weight: 500; color: #4847E0;">Spent</span>
+        </div>
+        <div>
+          <div style="display: flex; align-items: center">
+            <div style="
+                  padding: 1rem;
+                  background-color: #28a87a1e;
+                  font-size: 1.5rem;
+                ">
+              <i class="far fa-file-alt" style="color: #28a87a"></i>
+            </div>
+            <div style="
+                  display: flex;
+                  flex-direction: column;
+                  margin-left: 1px;
+                  height: 3.5rem;
+                  justify-content: space-between;
+                  padding: 0.3rem;
+                ">
+              <span class="gray-1">Company Cost</span>
+              <span class="header5-bold">{{ benefitDetails.companyContribution| currency }}</span>
+            </div>
+          </div>
+
+          <div style="display: flex; align-items: center; margin-top: 2rem;">
+            <div style="
+                    padding: 1rem;
+                    background-color: #28a87a1e;
+                    font-size: 1.5rem;
+                  ">
+              <i class="far fa-file-alt" style="color: #28a87a"></i>
+            </div>
+            <div style="
+                    display: flex;
+                    flex-direction: column;
+                    margin-left: 1px;
+                    height: 3.5rem;
+                    justify-content: space-between;
+                    padding: 0.3rem;
+                  ">
+              <span class="gray-1">Employee Cost</span>
+              <span class="header5-bold">{{ benefitDetails.employeeCost | currency }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-6">
+      <div style="justify-content: center; height: 100%; display: flex">
+        <div style="display: flex; align-items: center">
+          <div style="
+                padding: 1rem;
+                background-color: #0070ff1e;
+                font-size: 1.5rem;
+              ">
+            <i class="fas fa-calendar" style="color: #0070ff"></i>
+          </div>
+          <div style="
+                display: flex;
+                flex-direction: column;
+                margin-left: 1px;
+                height: 3.5rem;
+                justify-content: space-between;
+                padding: 0.3rem;
+              ">
+            <span class="gray-1">Financial year</span>
+            <span class="header5-bold">{{benefitDetails.financialYear}}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div style="display: flex; justify-content: flex-end; padding: 1rem; margin-top: -3rem; background: transparent;">
+    <button nbButton type="outline" status="primary" outline style="border: none;">View Breakdown</button>
+  </div>
+</div>
+<div style="margin: 0.5rem;"></div>
+<ngx-componentsheader pageName="Benefit Coverages" [requiredButton]="topActionButtons" (buttonClick)='modal($event)'>
+</ngx-componentsheader>
+<ngx-default-content *ngIf="showEmpty" pageHeader="Benefit Coverages" pageDescription="No record found"
+  [loading]="loading">
+</ngx-default-content>
+<div class="row" *ngIf="!showEmpty">
+  <div class="col-sm-4" *ngFor="let a of allBenefito" style="padding: 0px;cursor: pointer;"
+    [routerLink]="['/benefits/BenefitDetails',a.id]">
+    <div style="margin: 15px;">
+      <div class="card" style="display: flex; flex-direction: row; padding: 1rem;">
+        <div style="margin-right: 1rem;">
+          <img style="height: 3rem; width: 3rem;" src="assets/icons/CareerSuccession.jpg">
+        </div>
+        <div style="display: flex; flex-direction: row;">
+          <div style="display: flex; flex-direction: column;">
+            <span style="font: normal normal normal 16px/19px Rubik; color: #11141A;">{{a.name}}</span>
+            <br style="margin: 2rem;" />
+            <span style="font: normal normal normal 14px/22px Rubik; color: #86828D;">{{a.vendorName}}</span>
+          </div>
+          <div>
+            <span style="margin-left: 0.8rem; color: red;">
+              <i class="far fa-trash-alt" (click)="deleteBenefit(a.id)"></i>
+            </span>
+          </div>
+        </div>
+
+
+      </div>
+    </div>
+  </div>
+</div>

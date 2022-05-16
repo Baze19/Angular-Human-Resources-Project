@@ -1,0 +1,18 @@
+<ngx-componentsheader [pageName]="title" >   
+</ngx-componentsheader>
+
+
+    <nb-card>
+    <nb-card-body >
+      <ngx-default-content *ngIf="showEmpty" pageHeader="Employee Onboarding"
+      pageDescription="Click on the button to create an Employee Onboarding" buttonValue="Create Employee" [loading]="loading"
+      (buttonClick)="gotohiring()">
+    </ngx-default-content>
+    <ngx-tablecomponent *ngIf="!showEmpty" (filterChange)="filterUpdated($event)" [showActions]="true"
+      [showFilter]="true" (actionClick)="tableActionClicked($event)" [actions]="tableActions" [userData]="onBoarding"
+      [tableColum]="tableColumns" [totalItems]="totalItems" [currentPage]="currentPage" [loading]="loading">
+    </ngx-tablecomponent>
+
+    </nb-card-body>
+    </nb-card>
+

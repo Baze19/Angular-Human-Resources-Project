@@ -1,0 +1,347 @@
+<ngx-componentsheader
+  pageName="Disbursement"
+  [requiredButton]="[]"
+></ngx-componentsheader>
+<div class="main-page-container">
+  <!-- {{ allBanks | json }} -->
+  <nb-tabset (changeTab)="selectTab($event)">
+    <nb-tab tabTitle="Single Disbursement" [tabId]="TABS.SINGLE">
+      <form #disburseForm="ngForm" name="disburseForm" id="disburseForm">
+        <div class="form-group row">
+          <div class="col-sm-2 col-md-2 col-lg-2">
+            <label>Channel</label>
+          </div>
+          <div class="col-sm-6 col-md-6 col-lg-6">
+            <select
+            class="form-control"
+            placeholder="Select Channel" name="channel" #channel="ngModel" [(ngModel)]="disbursement.channelId"
+          >
+          <option value=""  disabled>Select Channel</option>
+          <option [value]="mychannel.id" *ngFor="let mychannel of allChannels">{{mychannel.name}}</option>
+        </select>
+          </div>
+        </div>
+
+            <div class="form-group row">
+              <div class="col-sm-2 col-md-2 col-lg-2">
+                <label>Disburse for</label>
+              </div>
+              <div class="col-sm-6 col-md-6 col-lg-6">
+                <nb-radio-group name="categoryId" #categoryId="ngModel" [(ngModel)]="disbursement.categoryId" (ngModelChange)="changeDisburse($event)">
+                  <nb-radio *ngFor="let category of allCategories" [value]="category.id" >{{ category.text }}</nb-radio>
+                </nb-radio-group>
+              </div>
+            </div>
+
+            <div *ngIf="category === 1" class="form-group row" style="margin-top: 20px">
+              <div class="col-sm-2 col-md-2 col-lg-2">
+                <label>Project</label>
+              </div>
+              <div class="col-sm-6 col-md-6 col-lg-6">
+                <select class="form-control" name="projectItem" #projectItem="ngModel" [(ngModel)]="disbursement.projectId" placeholder="Select">
+                  <option value="" disabled>Select Project Item</option>
+                  <option *ngFor="let project of allProjects" [value]="project.id">{{ project.name }}</option>
+                </select>
+              </div>
+              <div *ngIf="projectItem.invalid && (projectItem.dirty || projectItem.touched)" class="error">
+                <div *ngIf="projectItem.errors.required">Project Item is required</div>
+              </div>
+            </div>
+
+            <div *ngIf="category === 2" style="margin-top: 20px">
+
+              <div class="form-group row">
+                <div class="col-sm-2 col-md-2 col-lg-2">
+                  <label>Budget</label>
+                </div>
+                <div class="col-sm-6 col-md-6 col-lg-6">
+                <select name="budget" #budget="ngModel" [(ngModel)]="allBudget.id" (change)="getBudgetItem($event.target.value)" class="form-control">
+                  <option value=""> Select Budget Financial Year</option>
+                  <option *ngFor="let budget of myBudget" [value]="budget.id">{{budget.financialYearStartDate	 | date : 'longDate'}} - {{budget.financialYearEndDate | date : 'longDate'}}</option>
+                </select>
+              </div>
+              </div>
+
+              <div class="form-group row">
+              <div class="col-sm-2 col-md-2 col-lg-2">
+                <label>Budget Item</label>
+              </div>
+              <div class="col-sm-6 col-md-6 col-lg-6">
+                <select class="form-control" name="disbursementBudgetItemId" #disbursementBudgetItemId="ngModel" [(ngModel)]="disbursement.disbursementBudgetItemId" placeholder="Select">
+                <option value="" disabled>--Select Budget Item--</option>
+                <option *ngFor="let item of allBudgetItems" [value]="item.id">{{ item.name }}</option>
+              </select>
+               <!-- <ngx-template *ngIf="finLoading == true">
+                  <div *ngIf="finLoading == true" style="background-color: white; min-height: 10vh;width: 100%;display: flex;justify-content: center;align-items: center;">
+                    <div style="font-size: 32px;">
+                      <i class="fa fa-spin fa-spinner"></i>&nbsp;Loading...
+                    </div>
+                  </div>
+                </ngx-template> -->
+              </div>
+              <div *ngIf="disbursementBudgetItemId.invalid && (disbursementBudgetItemId.dirty || disbursementBudgetItemId.touched)" class="error">
+                <div *ngIf="disbursementBudgetItemId.errors.required">Budget Item is required</div>
+              </div>
+            </div>
+            </div>
+
+
+            <div class="form-group row">
+              <div class="col-sm-2 col-md-2 col-lg-2">
+                <label>Recipient</label>
+              </div>
+              <div class="col-sm-6 col-md-6 col-lg-6">
+                <nb-radio-group name="recipientIt" [(ngModel)]="recipient" #recipientIt="ngModel" (ngModelChange)="changeRecipient($event)">
+                  <nb-radio *ngFor="let recipient of recipientVal" [value]='recipient.value'>{{recipient.title}}</nb-radio>
+                  <!-- <nb-radio [value]='2'>Existing Beneficiary</nb-radio>
+                  <nb-radio [value]='3'>Employee</nb-radio> -->
+                </nb-radio-group>
+              </div>
+            </div>
+
+
+            <div *ngIf="myrecipient == 'new'">
+              <div class="form-group row" style="margin-top: 20px">
+                <div class="col-sm-2 col-md-2 col-lg-2">
+                  <label>Bank Name</label>
+                </div>
+                <div class="col-sm-6 col-md-6 col-lg-6">
+                  <select class="form-control" name="bankName" #bankName="ngModel" [(ngModel)]="disbursement.bankId">
+                    <option  value="" disabled>-- Select Bank --</option>
+                    <option *ngFor="let bank of allbanksName; let i = index" [value]="bank.option_value">{{bank.option_text}}</option>
+                  </select>
+                </div>
+              </div>
+
+
+              <div class="form-group row" style="margin-top: 20px">
+                <div class="col-sm-2 col-md-2 col-lg-2">
+                  <label>Account Number</label>
+                </div>
+                <div class="col-sm-6 col-md-6 col-lg-6">
+                  <input type="number" class="form-control" name="accountNo" minlength="10" maxlength="10" #accountNo="ngModel" [(ngModel)]="disbursement.accountNumber" placeholder="Enter account number" required>
+                </div>
+              </div>
+
+              <div class="form-group row" style="margin-top: 20px">
+                <div class="col-sm-2 col-md-2 col-lg-2">
+                  <label>Account Name</label>
+                </div>
+                <div class="col-sm-6 col-md-6 col-lg-6">
+                  <input type="text" class="form-control" name="accountName" #accountName="ngModel" [(ngModel)]="disbursement.accountName" placeholder="Enter Account Name">
+                </div>
+                <div *ngIf="accountName.invalid && (accountName.dirty || accountName.touched)" class="error">
+                  <div *ngIf="accountName.errors.required">Account Name is required</div>
+                </div>
+              </div>
+
+            </div>
+
+            <div *ngIf="myrecipient == 'existing'" class="form-group row" style="margin-top: 20px">
+              <div class="col-sm-2 col-md-2 col-lg-2">
+                <label>Beneficiary</label>
+              </div>
+              <div class="col-sm-6 col-md-6 col-lg-6">
+                <select class="form-control" name="beneficiary" #beneficiary="ngModel" [(ngModel)]="disbursement.beneficiary_id">
+                  <option value="" disabled>--Select Beneficiary--</option>
+                  <option *ngFor="let mybenefiary of allBeneficiaries; let i = index" value="mybenefiary.id">{{mybenefiary.accountName}}</option>
+                </select>
+              </div>
+              <div *ngIf="beneficiary.invalid && (beneficiary.dirty || beneficiary.touched)" class="error">
+                <div *ngIf="beneficiary.errors.required">Project Item is required</div>
+              </div>
+            </div>
+
+            <div *ngIf="myrecipient =='employee'" class="form-group row" style="margin-top: 20px">
+              <div class="col-sm-2 col-md-2 col-lg-2">
+                <label>Select Employee</label>
+              </div>
+              <div class="col-sm-6 col-md-6 col-lg-6">
+                <ngx-employee-master-search (masterSubmitted)="getSelectedEmployee($event,'employee')" [allowmultipleselection]="allowmultipleselection" [selectionHeader]="selectionHeader" [addbtnText]="addbtnText"></ngx-employee-master-search>
+              </div>
+            </div>
+
+            <div class="form-group row" style="margin-top: 20px">
+              <div class="col-sm-2 col-md-2 col-lg-2">
+                <label>Amount</label>
+              </div>
+              <div class="col-sm-6 col-md-6 col-lg-6">
+                <app-amount-input [(value)]="disbursement.amount"></app-amount-input>
+              </div>
+            </div>
+
+            <div class="form-group row" style="margin-top: 20px">
+              <div class="col-sm-2 col-md-2 col-lg-2">
+                <label>Scheduled Date</label>
+              </div>
+              <div class="col-sm-6 col-md-6 col-lg-6">
+                <ngx-date [(value)]="disbursement.scheduledDate"></ngx-date>
+              </div>
+            </div>
+
+            <div class="form-group row" style="margin-top: 20px">
+              <div class="col-sm-2 col-md-2 col-lg-2">
+                <label>Description/purpose  </label>
+              </div>
+              <div class="col-sm-6 col-md-6 col-lg-6">
+                <ngx-wysisyg-input style="padding-left: -10px;" [(value)]="disbursement.description"></ngx-wysisyg-input>
+              </div>
+
+            </div>
+
+            <div class="form-group row">
+              <div class="col-sm-2 col-md-2 col-lg-2"></div>
+              <!-- <div class="col-sm-6 col-md-6 col-lg-6" >
+                <nb-checkbox *ngIf="recipient ==1" status="basic" name="benefiary" #benefiary="ngModel" [(ngModel)]="disbursement.save_as_beneficiary">Save as Beneficiary</nb-checkbox>&nbsp;&nbsp;
+                <nb-checkbox status="basic" [(ngModel)]="disbursement.isRecurring" name="recurring" #recurring="ngModel" (checkedChange)="toggle($event)">Recurring</nb-checkbox>
+              </div> -->
+              <div class="col-sm-6 col-md-6 col-lg-6" >
+                  <nb-checkbox status="basic" [(ngModel)]="disbursement.saveAsBeneficiary" name="saveBenefiary" #saveBenefiary="ngModel">Save as Beneficiary</nb-checkbox>&nbsp;&nbsp;
+                  <nb-checkbox status="basic" [(ngModel)]="disbursement.isRecurring"  name="setRecurring" #setRecurring="ngModel" (checkedChange)="toggle($event)">Recurring</nb-checkbox>
+                </div>
+            </div>
+
+            <div *ngIf="recurrence == true">
+              <div class="form-group row" style="margin-top: 20px">
+                <div class="col-sm-2 col-md-2 col-lg-2">
+                  <label>Frequency</label>
+                </div>
+                <div class="col-sm-6 col-md-6 col-lg-6">
+                  <select class="form-control" name="frequency" #frequency="ngModel" [(ngModel)]="disbursement.frequencyId" placeholder="Frequency">
+                    <option value="" disabled>--Select Frequency--</option>
+                    <option *ngFor="let frequent of allFrequencies; let i = index" [value]="frequent.id">{{frequent.name}}</option>
+                  </select>
+                </div>
+
+              </div>
+              <div class="form-group row" style="margin-top: 20px">
+                <div class="col-sm-2 col-md-2 col-lg-2">
+                  <label>Start Date</label>
+                </div>
+                <div class="col-sm-6 col-md-6 col-lg-6">
+                  <ngx-date [max]="disbursement.endDate" [(value)]="disbursement.startDate"></ngx-date>
+                </div>
+              </div>
+              <div class="form-group row" style="margin-top: 20px">
+                <div class="col-sm-2 col-md-2 col-lg-2">
+                  <label>End Date</label>
+                </div>
+                <div class="col-sm-6 col-md-6 col-lg-6">
+                  <ngx-date  [min]="disbursement.startDate" [(value)]="disbursement.endDate"></ngx-date>
+                </div>
+              </div>
+            </div>
+
+          <div class="form-group row" style="margin-top: 20px">
+            <div class="col-sm-2 col-md-2 col-lg-2">
+              <label></label>
+            </div>
+            <div class="col-sm-6 col-md-6 col-lg-6">
+              <button nbButton status="primary" (click)="createDisbursement()" [disabled]="disburseForm.form.invalid">Submit</button>
+            </div>
+          </div>
+        </form>
+    </nb-tab>
+
+    <!-- Bulk Disbursement -->
+
+    <nb-tab tabTitle="Bulk Disbursement" [tabId]="TABS.BULK">
+      <div class="my-form">
+        <div class="form-group row">
+          <div class="col-sm-2 col-md-2 col-lg-2">
+            <label>Channel</label>
+          </div>
+          <div class="col-sm-6 col-md-6 col-lg-6">
+            <select
+            class="form-control"
+            placeholder="Select Channel" name="channel" #channel="ngModel" [(ngModel)]="disbursement.channelId"
+          ></select>
+          </div>
+        </div>
+
+            <div class="form-group row">
+              <div class="col-sm-2 col-md-2 col-lg-2">
+                <label>Beneficiary list</label>
+              </div>
+              <div class="col-sm-6 col-md-6 col-lg-6">
+                <ngx-file-upload></ngx-file-upload>
+              </div>
+            </div>
+
+
+            <div class="form-group row" style="margin-top: 20px">
+              <div class="col-sm-2 col-md-2 col-lg-2">
+                <label>Scheduled Date</label>
+              </div>
+              <div class="col-sm-6 col-md-6 col-lg-6">
+                <ngx-date></ngx-date>
+              </div>
+            </div>
+
+
+            <div class="form-group row" style="margin-top: 20px">
+              <div class="col-sm-2 col-md-2 col-lg-2">
+                <label>Comments</label>
+              </div>
+              <div class="col-sm-6 col-md-6 col-lg-6">
+                <!-- <ngx-wysisyg-input style="padding-left: -10px;"></ngx-wysisyg-input> -->
+              </div>
+            </div>
+
+              <div class="form-group row">
+                <div class="col-sm-2 col-md-2 col-lg-2"></div>
+                <div class="col-sm-6 col-md-6 col-lg-6" >
+                  <nb-checkbox status="basic" [(ngModel)]="disbursement.saveAsBeneficiary">Save as Beneficiary</nb-checkbox>&nbsp;&nbsp;
+                  <nb-checkbox status="basic" [(ngModel)]="disbursement.isRecurring" (checkedChange)="toggle($event)">Recurring</nb-checkbox>
+                </div>
+              </div>
+
+              <div *ngIf="recurrence == true">
+                <div class="form-group row" style="margin-top: 20px">
+                  <div class="col-sm-2"></div>
+                  <div class="col-sm-6 col-md-6 col-lg-6">
+                    <select class="form-control" name="frequency" #frequency="ngModel" [(ngModel)]="disbursement.frequencyId" placeholder="Frequency">
+                      <option value="" default>--Select Frequency--</option>
+                      <option *ngFor="let frequent of allFrequencies" [value]="frequent.id">{{frequent.name}}</option>
+                    </select>
+                  </div>
+
+                </div>
+                <div class="form-group row" style="margin-top: 20px">
+                  <div class="col-sm-2 col-md-2 col-lg-2">
+                    <label>Start Date</label>
+                  </div>
+                  <div class="col-sm-6 col-md-6 col-lg-6">
+                    <ngx-date [max]="disbursement.endDate" [value]="disbursement.startDate"></ngx-date>
+                  </div>
+                </div>
+                <div class="form-group row" style="margin-top: 20px">
+                  <div class="col-sm-2 col-md-2 col-lg-2">
+                    <label>End Date</label>
+                  </div>
+                  <div class="col-sm-6 col-md-6 col-lg-6">
+                    <ngx-date [min]="disbursement.startDate" [value]="disbursement.endDate"></ngx-date>
+                  </div>
+                </div>
+              </div>
+
+            <div class="form-group row" style="margin-top: 20px">
+              <div class="col-sm-2 col-md-2 col-lg-2">
+                <label></label>
+              </div>
+              <div class="col-sm-6 col-md-6 col-lg-6">
+                <button type="submit" (click)="cancelSubmission()" nbButton status="primary" outline>Cancel</button>
+                <button nbButton status="primary" (click)="createDisbursement()">Submit</button>
+              </div>
+            </div>
+            <!-- <div class="form-group row">
+              <div class="col-sm-6" style="display: flex; flex-direction: row; justify-content: space-between;">
+               <button type="submit" class="btn my-button" (click)="createDisbursement()" nbButton status="primary">Submit</button>
+               <span style="padding: 8px;"></span>
+               <button type="submit" class="btn cancel-button" (click)="cancelSubmission()" nbButton status="primary" outline>Cancel</button>
+             </div>
+           </div> -->
+          </div>
+    </nb-tab>
+  </nb-tabset>
+</div>

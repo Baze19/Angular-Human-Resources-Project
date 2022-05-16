@@ -1,0 +1,32 @@
+<ngx-componentsheader [pageName]='ExitManagement' [requiredButton]="topActionButtons" (buttonClick)='modal($event)'>
+
+</ngx-componentsheader>
+
+
+<nb-card style="margin-top: 15px;">
+    <nb-card-body>
+
+        <nb-tabset #tset (click)="filterLeavePlan(tset.tabs._results)">
+            <nb-tab tabTitle="New Exits">
+            
+            </nb-tab>
+            <nb-tab tabTitle="Compelled Exit">
+                
+            </nb-tab>
+
+            <nb-tab tabTitle="Cancelled Exit">
+                
+            </nb-tab>
+        </nb-tabset>
+        <ngx-default-content *ngIf="showEmpty" [pageHeader]="ExitManagement"
+        pageDescription="Click on below button to iniate a new Exit Request" [buttonValue]="topActionButtons[0].label" [loading]="loading"
+        (buttonClick)="modal(0)">
+      </ngx-default-content>
+      <ngx-tablecomponent *ngIf="!showEmpty" (filterChange)="filterUpdated($event)" [showActions]="true"
+        [showFilter]="true" (actionClick)="tableActionClicked($event)" [actions]="tableActions" [userData]="allExitRequest"
+        [tableColum]="tableColumns" [totalItems]="totalItems" [currentPage]="currentPage" [loading]="loading">
+      </ngx-tablecomponent>
+    </nb-card-body>
+
+
+</nb-card>

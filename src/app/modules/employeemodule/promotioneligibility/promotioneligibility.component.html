@@ -1,0 +1,119 @@
+<ngx-componentsheader pageName='Promotion Eligibility Bucket List' [requiredButton]="topActionButtons"
+    (buttonClick)='modal($event)'>
+</ngx-componentsheader>
+
+<nb-card style="margin-top: 15px;">
+    <nb-card-body>
+
+        <nb-tabset #tset (click)="filterBucket(tset.tabs._results)">
+            <nb-tab tabTitle="Open"></nb-tab>
+            <nb-tab tabTitle="Close"></nb-tab>
+        </nb-tabset>
+        <ngx-default-content
+        *ngIf="showEmpty"
+        pageHeader="Create Eligibility Bucket"
+        pageDescription="Click on the button to create Eligibility Bucket"
+        buttonValue="Create Bucket"
+        [loading]="loading"
+        (buttonClick)="showAddPlanModal = true"
+      >
+      </ngx-default-content>
+        <ngx-tablecomponent  
+        *ngIf="!showEmpty"
+        (filterChange)="filterUpdated($event)"
+        [showActions]="true"
+        [showFilter]="true"
+        (actionClick)="tableActionClicked($event)"
+        [actions]="tableActions" 
+        [userData]="eligibilityList" 
+        [tableColum]="tableColumns"
+        [totalItems]="totalItems"
+        [currentPage]="currentPage"
+        [loading]="loading"
+        >
+    </ngx-tablecomponent>
+    </nb-card-body>
+
+    <ngx-side-modal [(show)]='showAddPlanModal' style="width: 500px;">
+        <h6 modal-header *ngIf="modificationStatus">{{promotionBucketList.name}}</h6>
+        <h6 modal-header *ngIf="!modificationStatus">Add Eligibility Status</h6>
+        <div modal-body>
+            <form #promotionBucket="ngForm" name="promotionBucket">
+              <div class="form-group row" *ngIf="modificationStatus" >
+                <div class="col">
+                  <label>Number of Members:</label>
+                <h6>{{promotionBucketList.noOfMembers}}</h6>
+                </div>
+              </div>
+                <div class="form-group row">
+                  <div class="col">
+                    <label for="Name">Bucket Name:</label>
+                    <input type="text" class="form-control" placeholder="Enter Name" name="name"
+                    #name="ngModel" [(ngModel)]="promotionBucketList.name" id="name" required>
+                    <div *ngIf="name.invalid && (name.dirty || name.touched)" class="error">
+                      <div *ngIf="name.errors.required">Name is required</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="form-group row" *ngIf="modificationStatus" >
+                  <div class="col">
+                    <label>Date Genereated:</label>
+                  <h6>{{promotionBucketList.date_generated | date}}</h6>
+                  </div>
+                </div>
+                <div class="form-group row" *ngIf="modificationStatus" >
+                  <div class="col">
+                    <label>Genereated By:</label>
+                  <h6>{{promotionBucketList.generated_by}}</h6>
+                  </div>
+                </div>
+
+                <div class="form-group row" >
+             
+                    <label for="Approval">Approval workflow:</label>
+                    <label for="" style="font-size: small; font-weight: lighter;">Ensure you created the workflow with category as PROMOTIONS </label>
+                    <select class="form-control" name="approvalProcessId" id="approvalProcessId" [(ngModel)]="promotionBucketList.approvalProcessId" #approvalProcessId="ngModel" required>
+                      <option value="">---Select workflow---</option>
+                      <option *ngFor="let app of approvalProcesses" [value]="app.id">{{app.name}}</option>
+                    </select>
+               
+                </div>
+                <div class="form-group row">
+                  <div class="col">
+                <nb-checkbox name="is_closed" id="is_closed" [(ngModel)]="promotionBucketList.is_closed" #is_closed="ngModel">
+                  Is Closed
+                </nb-checkbox>
+                  </div>
+                </div>
+
+                <div class="form-group row" *ngIf="modificationStatus">
+                  <div class="col">
+                <nb-checkbox name="is_active" id="is_active" [(ngModel)]="promotionBucketList.is_active" #is_active="ngModel">
+                  Is Active
+                </nb-checkbox>
+                  </div>
+                </div>
+
+                <div class="form-group row" >
+                  <div class="col">
+                    <label>Comment:</label>
+                    <textarea nbInput fullWidth rows="5" style="padding-left: -10px;" [(ngModel)]="promotionBucketList.comments" #comments="ngModel" name="comments" id="comments"></textarea>
+                  </div>
+                </div>
+                
+            </form>
+        </div>
+
+        <div modal-actions style="margin-top: 5px; margin-bottom: 10px;display: flex;flex-direction: row;">
+          <ngx-loadable-button [loading]="loading" [disabled]="promotionBucket.invalid" (click)="addToEligibilityList()" >
+         <span *ngIf="modificationStatus">Save Changes</span> 
+         <span *ngIf="!modificationStatus">Submit</span>  
+          </ngx-loadable-button>           
+          <div style="padding-left: 15px;">
+            <button nbButton outline status="primary" class="d-flex column" style="background-color: #fff;">Discard</button>
+          </div>
+                 </div>
+
+    </ngx-side-modal>
+
+</nb-card>

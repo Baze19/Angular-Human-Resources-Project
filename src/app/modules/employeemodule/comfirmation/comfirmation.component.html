@@ -1,0 +1,41 @@
+<ngx-componentsheader pageName='Confirmation'>
+
+</ngx-componentsheader>
+
+
+<nb-card style="margin-top: 15px;">
+    <nb-card-body>
+
+        <nb-tabset #tset (click)="filtertabConf(tset.tabs._results)">
+            <nb-tab tabTitle="Due">
+
+            </nb-tab>
+            <nb-tab tabTitle="Pending" >
+               
+            </nb-tab>
+
+            <nb-tab tabTitle="Approved" >
+            
+            </nb-tab>
+            <nb-tab tabTitle="Declined" >
+            </nb-tab>
+            <nb-tab tabTitle="Extended">
+
+            </nb-tab>
+        </nb-tabset>
+        
+<!-- 
+        <ngx-tablecomponent [userData]="data" [tableColum]="tableColumns"></ngx-tablecomponent> -->
+
+        <ngx-default-content *ngIf="showEmpty" pageHeader="No Confirmation Record Found"
+        pageDescription="" buttonValue=""
+    >
+      </ngx-default-content>
+      <ngx-tablecomponent *ngIf="!showEmpty" (filterChange)="filterUpdated($event)" [showFilter]="true"
+        (actionClick)="tableActionClicked($event)" [actions]="tableActions" [userData]="comfirmationData"
+        [tableColum]="tableColumns" [totalItems]="totalItems" [currentPage]="currentPage" [loading]="loading">
+      </ngx-tablecomponent>
+    </nb-card-body>
+
+
+</nb-card>

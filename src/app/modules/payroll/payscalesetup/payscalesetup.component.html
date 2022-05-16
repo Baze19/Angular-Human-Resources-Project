@@ -1,0 +1,77 @@
+<ngx-componentsheader pageName='Payment Scale Setup' [requiredButton]="topActionButtons" (buttonClick)='modal($event)'>
+</ngx-componentsheader>
+<nb-card style="margin-top: 3rem;">
+    <nb-card-body>
+        <form>
+            <div class="form-group row">
+                <label for="Institution Name" class="label col-sm-3 col-form-label listsubheader">Scale Name</label>
+                <div class="col-sm-9">
+                    <input type="text" nbInput fullWidth placeholder="placeholder tetx">
+                </div>
+            </div>
+ 
+
+            <div class="form-group row">
+                <label for="Element Type" class="label col-sm-3 col-form-label listsubheader">Pay
+                    Element</label>
+                <div class="col-sm-5">
+                    <select aria-placeholder="select" name="" id="" class="form-control">
+                        <option >--Select Element--</option>
+                        <option [(value)]="pay.name" *ngFor="let pay of payElement">{{pay.name}}</option>
+                    </select>
+                </div>
+                <div class="col-sm-4">
+                    <button  outline="true"   nbButton status="primary" class="d-flex column" >  
+                        <nb-icon  icon="plus"></nb-icon>&nbsp;Add </button>
+       
+                </div>
+                <div>
+                    <ul *ngFor="let list of ElementList">
+                        <div style="display: flex; flex-direction: row;">
+                            <div>
+                                <button style="background-color: white;">
+                                    {{list.name}}
+                                    <i class="far fa-window-close" (click)="onDelete(list)"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </ul>
+                </div>
+
+            </div>
+
+            <div class="form-group row">
+                <label for="Element Type" class="label col-sm-3 col-form-label listsubheader">Pay Frequency</label>
+                <div class="col-sm-9">
+                    <select aria-placeholder="select" name="" id="" class="form-control">
+                        <option >--Select Frequency--</option>
+                        <option [(value)]="freq.id" *ngFor="let freq of allfrequency">{{freq.name}}</option>
+
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group row">
+                <label for="Element Type" class="label col-sm-3 col-form-label listsubheader">Employee</label>
+                <div class="col-sm-9">
+                    <ngx-employee-master-search  (masterSubmitted)="getSelectedEmployee($event);" [allowmultipleselection]="allowmultipleselection" [selectionHeader]="selectionHeader" [addbtnText]="addbtnText"></ngx-employee-master-search>
+                </div>
+              
+            </div>
+        </form>
+
+    </nb-card-body>
+
+
+    <div class="form-group row" style="margin-top: 2rem; margin-bottom: 1rem;">
+        <label for="Account Number" class="label col-sm-3 col-form-label listsubheader"></label>
+        <div class="col-sm-8 d-flex">
+            <button nbButton status="primary" class="d-flex column">Save</button>
+            <button nbButton outline status="primary" class="d-flex column"
+                style="background-color: white; margin-left: 2rem;">Cancel</button>
+           
+
+
+        </div>
+    </div>
+</nb-card>

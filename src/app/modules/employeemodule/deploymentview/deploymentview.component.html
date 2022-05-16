@@ -1,0 +1,276 @@
+<ngx-componentsheader pageName='Emloyee View'>
+
+</ngx-componentsheader>
+
+<div class="row">
+    <div class="col-md-4 col-xxl-4">
+        <nb-card>
+            <nb-card-body style="padding: 1.5rem 1rem 0 1rem !important;">
+                <div class="fmContainer">
+                    <div style="padding-bottom: 0;">
+                        <div style="display: flex;align-items: center;justify-content: center;">
+                            <div class="employee-avatar">
+                                <img [src]="employee.profilePic" onError="this.src='assets/icons/camera.jpg'">
+                            </div>
+                        </div>
+                        <div style="text-align: center; padding: 10px;">
+                            <p class="header6-medium" style="margin-bottom: 1rem !important;">
+                                {{employee.firstName}}&nbsp;{{employee.lastName}}</p>
+                            <p style="color: #95A8B8 !important;">{{jobName}}</p>
+                        </div>
+                    </div>
+                </div>
+            </nb-card-body>
+            <div style.height="{{(scase.offsetHeight < 402)?380 : (scase.offsetHeight - 210) }}px">
+                <div #linklist style="display: flex;flex-direction: column;"
+                    *ngFor="let hiringlist of employeeviewlist; let i = index">
+
+                    <div (click)="selectPanel(hiringlist,i)"
+                        [ngClass]="{'wizardlistactive': hiringlist.status == 'Active','wizardlistinactive': hiringlist.status != 'Active'}"
+                        style="display: flex;flex-direction: row;margin: .5rem 0 .5rem 0; align-items: center;cursor: pointer;">
+                        <div style="padding-left: 1rem;">
+                            <nb-icon icon="{{hiringlist.iconname}}"
+                                status="{{hiringlist.status == 'Active'? 'primary': 'none'}}"></nb-icon>
+                        </div>
+                        <div style="padding-left: 0.625rem;"><span
+                                [ngClass]="{'listtextActive': hiringlist.status == 'Active','listtextInactive': hiringlist.status != 'Active'}">{{hiringlist.label}}
+                            </span> </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </nb-card>
+    </div>
+    <div class="col-md-8 col-xxl-8">
+        <nb-card>
+            <nb-card-body>
+                <div #scase [ngSwitch]="selectedCase">
+                    <div class="fmContainer" *ngSwitchCase="'personal_Info'">
+                        <nb-tabset>
+                            <nb-tab tabTitle="Personal information">
+                                <nb-card-header style="margin-bottom: 4rem;">
+
+
+                                    <div style="display: flex; flex-direction: row; align-items: center;">
+
+                                        <div>
+                                            <p style="font-weight: bold;">Personal Information</p>
+                                        </div>
+
+
+                                    </div>
+                                </nb-card-header>
+                                <div style="font-weight: bold; padding: 1rem;">
+                                    <div class="row">
+                                        <div class="col-sm-4">
+                                            <span>First Name</span>
+                                        </div>
+                                        <div class="col-sm-8">
+                                            <span>{{employee.firstName}}</span>
+                                        </div>
+
+
+                                    </div>
+                                    <br>
+                                    <div class="row">
+                                        <div class="col-sm-4">
+                                            <span>Last Name</span>
+                                        </div>
+                                        <div class="col-sm-8">
+                                            <span>{{employee.lastName}}</span>
+                                        </div>
+
+
+                                    </div>
+                                    <br>
+                                    <div class="row">
+                                        <div class="col-sm-4">
+                                            <span>Employee No</span>
+                                        </div>
+                                        <div class="col-sm-8">
+                                            <span>{{employee.id}}</span>
+                                        </div>
+
+
+                                    </div>
+                                    <br>
+                                    <div class="row">
+                                        <div class="col-sm-4">
+                                            <span>Email Address</span>
+                                        </div>
+                                        <div class="col-sm-8">
+                                            <span>{{employee.workEmail}}</span>
+                                        </div>
+
+
+                                    </div>
+                                    <br>
+                                    <div class="row">
+                                        <div class="col-sm-4">
+                                            <span>Marital Status</span>
+                                        </div>
+                                        <div class="col-sm-8">
+                                            <span>{{getMaritalNAme(employee.maritalStatusId)}}</span>
+                                        </div>
+
+                                    </div>
+                                    <br>
+                                    <div class="row">
+                                        <div class="col-sm-4">
+                                            <span>Department</span>
+                                        </div>
+                                        <div class="col-sm-8">
+                                            <span>{{employee.contracts[0]?.departmentName}}</span>
+                                        </div>
+                                    </div>
+                                    <br>
+                                    <div class="row">
+                                        <div class="col-sm-4">
+                                            <span>Address</span>
+                                        </div>
+                                        <div class="col-sm-8" *ngFor="let add of employee.addresses">
+                                            <div style="display: flex;flex-direction: column;">
+                                                <span>{{add.address1}}</span>
+                                                <span>{{add.address2}}</span>
+                                                <span>{{add.address_type_name}}</span>
+                                                <span>{{add.lga}}</span>
+                                                <span>{{add.state}}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+
+
+
+
+
+                                <br>
+
+                            </nb-tab>
+
+                            <nb-tab tabTitle="Qualifications">
+                                <nb-card>
+                                    <nb-card-header>
+                                        <h6>Qualifications</h6>
+
+                                    </nb-card-header>
+                                    <nb-card-body>
+                                        <ngx-default-content *ngIf="showEmptyQualifications"
+                                            pageHeader="No Qualification Record Found" pageDescription=""
+                                            buttonValue="">
+                                        </ngx-default-content>
+                                        <ngx-tablecomponent *ngIf="!showEmptyQualifications" [showFilter]="false"
+                                            [userData]="employee.qualifications" [tableColum]="tableColumns"
+                                            [totalItems]="totalItems" [currentPage]="currentPage">
+                                        </ngx-tablecomponent>
+                                    </nb-card-body>
+                                </nb-card>
+
+                            </nb-tab>
+                        </nb-tabset>
+                    </div>
+
+                    <div class="fmContainer" *ngSwitchCase="'deployment_info'">
+                        <nb-card-header>
+                            <h6>Deployment Information</h6>
+
+                        </nb-card-header>
+
+                        <br>
+
+                        <div style="font-weight: bold; padding: 2rem;">
+                            <div class="row">
+                                <div class="col-sm-4">
+                                    <span>Ref Number</span>
+                                </div>
+                                <div class="col-sm-8">
+                                    <span>{{comfirmationData.refNo}}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="font-weight: bold; padding: 2rem;">
+                            <div class="row">
+                                <div class="col-sm-4">
+                                    <span>Current Location</span>
+                                </div>
+                                <div class="col-sm-8">
+                                    <span>{{getLocationNAme(comfirmationData.current_location_id)}}</span>
+                                </div>
+                            </div>
+                        </div>
+
+
+
+
+                        <div style="font-weight: bold; padding: 2rem;">
+                            <div class="row">
+                                <div class="col-sm-4">
+                                    <span>Last Deployment Date</span>
+                                </div>
+                                <div class="col-sm-8">
+                                    <span>{{employee.contracts[0]?.dateOfLastDeployment | date}}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="font-weight: bold; padding: 2rem;">
+                            <div class="row">
+                                <div class="col-sm-4">
+                                    <span>Effective Date</span>
+                                </div>
+                                <div class="col-sm-8">
+                                    <span>{{comfirmationData.effective_date | date}}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="font-weight: bold; padding: 2rem;">
+                            <div class="row">
+                                <div class="col-sm-4">
+                                    <span>Requested Location</span>
+                                </div>
+                                <div class="col-sm-8">
+                                    <span>{{getLocationNAme(comfirmationData.requested_location_id)}}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="font-weight: bold; padding: 2rem;">
+                            <div class="row">
+                                <div class="col-sm-4">
+                                    <span>Comments</span>
+                                </div>
+                                <div class="col-sm-8">
+                                    <span>{{comfirmationData.comment}}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="font-weight: bold; padding: 2rem;">
+                            <div class="row">
+                                <div class="col-sm-4">
+                                    <span>Status</span>
+                                </div>
+                                <div class="col-sm-8">
+                                    <span
+                                        [ngClass]="{'pendingClass':comfirmationData.log_status == '1', 'approvedClass' : comfirmationData.log_status == '2','rejectedClass':comfirmationData.log_status == '3'}">
+                                        {{comfirmationData.log_status == 1? "Pending":(comfirmationData.log_status == 2?
+                                        "Approved": "Declined") }}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="font-weight: bold; padding: 2rem;">
+                            <div class="row">
+                                <div class="col-sm-4">
+                                    <span>Documents</span>
+                                </div>
+                                <div class="col-sm-8">
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </nb-card-body>
+        </nb-card>
+    </div>
+</div>
